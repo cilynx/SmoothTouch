@@ -1,8 +1,11 @@
 package com.wolfteck.smoothtouch;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +13,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,12 +36,80 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
+    WebView webView;
+
+    public class WebAppInterface {
+        /** Show a toast from svg */
+        @JavascriptInterface
+        public void showToast(String toast) {
+            Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
+        }
+
+        @JavascriptInterface
+        public void runCommand(String cmd) {
+            showToast(cmd);
+        }
+
+        @JavascriptInterface
+        public void jog(String jog) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            runCommand("G91 G0 " + jog + " F" + prefs.getString(jog.substring(0,1).toLowerCase() + "_velocity", "0") + " G90");
+        }
+    }
+
+    String loadSvg() {
+        try {
+            BufferedReader input = new BufferedReader(new InputStreamReader(
+                    getAssets().open("jogger_rose.svg")));
+            StringBuffer buf = new StringBuffer();
+            String s = null;
+            while ((s = input.readLine()) != null) {
+                buf.append(s);
+                buf.append('\n');
+            }
+            input.close();
+            return buf.toString();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        webView = (WebView) findViewById(R.id.webView);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+        String svg = loadSvg();
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.loadData(svg, "image/svg+xml", "utf-8");
+
+        ToggleButton light = (ToggleButton) findViewById(R.id.light_toggle);
+        light.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(MainActivity.this, "M106S100", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "M107", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        ToggleButton halt = (ToggleButton) findViewById(R.id.play_pause);
+        halt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(MainActivity.this, "M112", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "M999", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
