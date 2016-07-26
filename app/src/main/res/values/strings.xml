@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Smooth Touch</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_smoothie_host">Smoothieboard Hostname / IP</string>
+    <string name="pref_default_smoothie_host">smoothie</string>
+
+    <string name="pref_title_machine_type">Machine Type</string>
+    <string-array name="pref_machine_type_titles">
+        <item>Mill</item>
+        <item>Lathe</item>
+        <item>Laser Cutter</item>
+        <item>3D Printer</item>
+    </string-array>
+    <string-array name="pref_machine_type_values">
+        <item>mill</item>
+        <item>lathe</item>
+        <item>laser</item>
+        <item>printer</item>
+    </string-array>
+
+    <string name="pref_default_machine_type">mill</string>
+
+    <string name="pref_title_x_velocity">X axis velocity (mm/min)</string>
+    <string name="pref_title_y_velocity">Y axis velocity (mm/min)</string>
+    <string name="pref_title_z_velocity">Z axis velocity (mm/min)</string>
+
+    <string name="pref_default_x_velocity">200</string>
+    <string name="pref_default_y_velocity">200</string>
+    <string name="pref_default_z_velocity">200</string>
+
+</resources>
