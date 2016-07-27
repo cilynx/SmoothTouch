@@ -50,4 +50,23 @@
         android:singleLine="true"
         android:title="@string/pref_title_z_velocity" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="show_codes"
+        android:title="Show G-codes sent to Smoothie" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="burn_move"
+        android:title="Burn when moving" />
+
+    <EditTextPreference
+        android:defaultValue="50"
+        android:inputType="number"
+        android:key="laser_power"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Laser Power (%)" />
+
 </PreferenceScreen>

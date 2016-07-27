@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,11 +20,17 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,33 +43,77 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
-    WebView webView;
+    private void sendCommand(final String cmd) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String url = "http://" + prefs.getString("smoothie_host", "smoothie") + "/command";
 
-    public class WebAppInterface {
-        /** Show a toast from svg */
-        @JavascriptInterface
-        public void showToast(String toast) {
-            Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
+        /* Show the gcode, if we're configured to do that */
+        if(prefs.getBoolean("show_codes", true)) {
+            Toast.makeText(MainActivity.this, cmd, Toast.LENGTH_SHORT).show();
         }
+
+        /* Actually send the request */
+        RequestQueue queue = Volley.newRequestQueue(this);
+        // Request a string response from the provided URL.
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        ) {
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                Log.d("getBody",cmd);
+                String localCmd = cmd + "\n";
+                return(localCmd.getBytes());
+            }
+        };
+        // Add the request to the RequestQueue.
+        queue.add(postRequest);
+    }
+
+    private WebView webView;
+
+    private class WebAppInterface {
+        /** Show a toast from svg */
+//        @JavascriptInterface
+//        public void showToast(String toast) {
+//            Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
+//        }
 
         @JavascriptInterface
         public void runCommand(String cmd) {
-            showToast(cmd);
+            sendCommand(cmd);
         }
 
         @JavascriptInterface
         public void jog(String jog) {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            runCommand("G91 G0 " + jog + " F" + prefs.getString(jog.substring(0,1).toLowerCase() + "_velocity", "0") + " G90");
+
+            String G = "G0";
+            String S = "";
+
+            if(prefs.getString("machine_type","").equals("laser") && prefs.getBoolean("burn_move", false)) {
+                S = "S" + Float.parseFloat(prefs.getString("laser_power","0"))/100;
+                G = "G1";
+            }
+
+            sendCommand("G91" + G + jog + "F" + prefs.getString(jog.substring(0,1).toLowerCase() + "_velocity", "0") + S + "G90");
         }
     }
 
-    String loadSvg() {
+    private String loadSvg() {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(
                     getAssets().open("jogger_rose.svg")));
-            StringBuffer buf = new StringBuffer();
-            String s = null;
+            StringBuilder buf = new StringBuilder();
+            String s;
             while ((s = input.readLine()) != null) {
                 buf.append(s);
                 buf.append('\n');
@@ -93,9 +144,20 @@ public class MainActivity extends AppCompatActivity {
         light.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(MainActivity.this, "M106S100", Toast.LENGTH_LONG).show();
+                    sendCommand("M106S100");
                 } else {
-                    Toast.makeText(MainActivity.this, "M107", Toast.LENGTH_LONG).show();
+                    sendCommand("M107");
+                }
+            }
+        });
+
+        ToggleButton laser = (ToggleButton) findViewById(R.id.laser_toggle);
+        laser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    sendCommand("M3");
+                } else {
+                    sendCommand("M5");
                 }
             }
         });
@@ -104,9 +166,9 @@ public class MainActivity extends AppCompatActivity {
         halt.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    Toast.makeText(MainActivity.this, "M112", Toast.LENGTH_LONG).show();
+                    sendCommand("M112");
                 } else {
-                    Toast.makeText(MainActivity.this, "M999", Toast.LENGTH_LONG).show();
+                    sendCommand("M999");
                 }
             }
         });
