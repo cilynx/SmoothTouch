@@ -54,6 +54,34 @@
             android:gravity="right"
             android:layout_weight="1" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ToggleButton
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textOn="Relative"
+                android:textOff="Absolute"
+                android:textSize="30sp"
+                android:id="@+id/relative_toggle"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent" />
+
+            <Button
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Zero"
+                android:textSize="30sp"
+                android:id="@+id/zero"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:onClick="zeroDRO"/>
+
+        </LinearLayout>
+
         <ToggleButton
             android:layout_width="match_parent"
             android:layout_height="match_parent"

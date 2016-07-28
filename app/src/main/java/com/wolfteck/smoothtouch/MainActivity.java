@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,21 @@ public class MainActivity extends AppCompatActivity {
     TextView dro_x;
     TextView dro_y;
     TextView dro_z;
+    float x;
+    float y;
+    float z;
+    Float x_offset;
+    Float y_offset;
+    Float z_offset;
+    boolean relative;
+    ToggleButton rel;
+
+    public void zeroDRO(View view) {
+        x_offset = x;
+        y_offset = y;
+        z_offset = z;
+        rel.setChecked(true);
+    }
 
     private void sendCommand(final String cmd) {
         sendCommand(cmd, true);
@@ -71,17 +87,26 @@ public class MainActivity extends AppCompatActivity {
         StringRequest postRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if(show_toast) { 
+                if(show_toast) {
                     Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
                 }
                 if(cmd.equals("M114.1")) {
                     parts = response.split(" ");
+                    x = Float.valueOf(parts[2].split(":")[1]);
+                    y = Float.valueOf(parts[3].split(":")[1]);
+                    z = Float.valueOf(parts[4].split(":")[1]);
                     dro_x = (TextView) findViewById(R.id.dro_x);
                     dro_y = (TextView) findViewById(R.id.dro_y);
                     dro_z = (TextView) findViewById(R.id.dro_z);
-                    dro_x.setText(parts[2].split(":")[1]);
-                    dro_y.setText(parts[3].split(":")[1]);
-                    dro_z.setText(parts[4].split(":")[1]);
+                    if(relative) {
+                        dro_x.setText(String.format("%.4f", x - x_offset));
+                        dro_y.setText(String.format("%.4f", y - y_offset));
+                        dro_z.setText(String.format("%.4f", z - z_offset));
+                    } else {
+                        dro_x.setText(String.format("%.4f", x));
+                        dro_y.setText(String.format("%.4f", y));
+                        dro_z.setText(String.format("%.4f", z));
+                    }
                     sendCommand("M114.1", false);
                 }
             }
@@ -165,6 +190,20 @@ public class MainActivity extends AppCompatActivity {
         String svg = loadSvg();
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.loadData(svg, "image/svg+xml", "utf-8");
+
+        rel = (ToggleButton) findViewById(R.id.relative_toggle);
+        rel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    relative = true;
+                    if(x_offset == null) { x_offset = x; }
+                    if(y_offset == null) { y_offset = y; }
+                    if(z_offset == null) { z_offset = z; }
+                } else {
+                    relative = false;
+                }
+            }
+        });
 
         ToggleButton light = (ToggleButton) findViewById(R.id.light_toggle);
         light.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
