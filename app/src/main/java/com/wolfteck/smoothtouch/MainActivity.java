@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -43,22 +45,45 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
+    SharedPreferences prefs;
+    String url;
+    String localCmd;
+    String[] parts;
+    RequestQueue queue;
+    TextView dro_x;
+    TextView dro_y;
+    TextView dro_z;
+
     private void sendCommand(final String cmd) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String url = "http://" + prefs.getString("smoothie_host", "smoothie") + "/command";
+        sendCommand(cmd, true);
+    }
+
+    private void sendCommand(final String cmd, final boolean show_toast) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        url = "http://" + prefs.getString("smoothie_host", "smoothie") + "/command";
 
         /* Show the gcode, if we're configured to do that */
-        if(prefs.getBoolean("show_codes", true)) {
+        if(prefs.getBoolean("show_codes", true) && show_toast) {
             Toast.makeText(MainActivity.this, cmd, Toast.LENGTH_SHORT).show();
         }
 
         /* Actually send the request */
-        RequestQueue queue = Volley.newRequestQueue(this);
-        // Request a string response from the provided URL.
         StringRequest postRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
+                if(show_toast) { 
+                    Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
+                }
+                if(cmd.equals("M114.1")) {
+                    parts = response.split(" ");
+                    dro_x = (TextView) findViewById(R.id.dro_x);
+                    dro_y = (TextView) findViewById(R.id.dro_y);
+                    dro_z = (TextView) findViewById(R.id.dro_z);
+                    dro_x.setText(parts[2].split(":")[1]);
+                    dro_y.setText(parts[3].split(":")[1]);
+                    dro_z.setText(parts[4].split(":")[1]);
+                    sendCommand("M114.1", false);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -70,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public byte[] getBody() throws AuthFailureError {
                 Log.d("getBody",cmd);
-                String localCmd = cmd + "\n";
+                localCmd = cmd + "\n";
                 return(localCmd.getBytes());
             }
         };
@@ -81,11 +106,6 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
 
     private class WebAppInterface {
-        /** Show a toast from svg */
-//        @JavascriptInterface
-//        public void showToast(String toast) {
-//            Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
-//        }
 
         @JavascriptInterface
         public void runCommand(String cmd) {
@@ -132,6 +152,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Initialize the request queue
+        queue = Volley.newRequestQueue(this);
+
+        // Start the DRO loop
+        sendCommand("M114.1", false);
 
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
