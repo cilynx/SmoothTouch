@@ -5,6 +5,7 @@ I'm building SmoothTouch because I've been using perl long enough to believe tha
 
 # Features
 * 3-axis jog and home
+* 3-axis DRO
 * 2-level laser safety
  * The button on the home screen sends M3/M5 to arm/disarm the laser (assuming you've wired your laser correctly and aren't just sending PWM into L)
  * The switch in preferences toggles between G0 (safe) and G1 (burn) for jogs
