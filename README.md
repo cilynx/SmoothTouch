@@ -12,5 +12,9 @@ I'm building SmoothTouch because I've been using perl long enough to believe tha
 * Simple on/off control for a fan/light (M106S100/M107)
 * Halt/Reset (M112/M999) that works even mid-move
 
+# Credits
+
+None of this would be possible without [The Smoothie Project](https://github.com/Smoothieware).  I'm not sure who originally put together the jog rose used in Smoothie's web interface as well as [Pronterface](http://www.pronterface.com/), but I'm using that SVG with very little modification here as well.
+
 # Roadmap
 This will mostly be demand-driven through [issues](https://github.com/cilynx/SmoothTouch/issues).
