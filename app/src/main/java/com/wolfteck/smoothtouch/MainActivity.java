@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     Float z_offset;
     boolean relative;
     ToggleButton rel;
+    Toolbar toolbar;
+    boolean heartbeat_stopped;
 
     public void zeroDRO(View view) {
         x_offset = x;
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         StringRequest postRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                toolbar.setSubtitle("Connected to " + prefs.getString("smoothie_host","smoothie"));
                 if(show_toast) {
                     Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
                 }
@@ -113,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if(cmd.equals("M114.1")) {
+                    sendCommand("M114.1", false);
+                }
+                toolbar.setSubtitle("Cannot connect to " + prefs.getString("smoothie_host","smoothie") + ".  Please check your hostname / IP.");
                 Toast.makeText(MainActivity.this, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
             }
         }
@@ -175,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Initialize the request queue
@@ -238,14 +245,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
