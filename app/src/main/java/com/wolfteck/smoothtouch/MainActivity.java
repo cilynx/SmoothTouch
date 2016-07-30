@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
     boolean relative;
     ToggleButton rel;
     Toolbar toolbar;
-    boolean heartbeat_stopped;
 
     public void zeroDRO(View view) {
         x_offset = x;
