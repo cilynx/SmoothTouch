@@ -3,6 +3,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
+    <string name="action_gcode">Play G-code</string>
+    <string name="title_activity_gcode">Play G-code</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

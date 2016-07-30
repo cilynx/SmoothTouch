@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -115,11 +116,12 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(cmd.equals("M114.1")) {
-                    sendCommand("M114.1", false);
-                }
                 toolbar.setSubtitle("Cannot connect to " + prefs.getString("smoothie_host","smoothie") + ".  Please check your hostname / IP.");
                 Toast.makeText(MainActivity.this, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+                if(cmd.equals("M114.1")) {
+                    SystemClock.sleep(5000);
+                    sendCommand("M114.1", false);
+                }
             }
         }
         ) {
@@ -266,6 +268,12 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        if (id == R.id.action_gcode) {
+            Intent intent = new Intent(this, GcodeActivity.class);
             startActivity(intent);
             return true;
         }
