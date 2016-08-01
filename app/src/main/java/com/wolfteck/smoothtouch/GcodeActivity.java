@@ -31,6 +31,12 @@ import java.util.Collections;
 
 public class GcodeActivity extends AppCompatActivity {
 
+    String gcode_file;
+
+    public void playFile(View view) {
+        sendCommand("M32 " + gcode_file);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,24 +85,30 @@ public class GcodeActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(GcodeActivity.this, response, Toast.LENGTH_SHORT).show();
-                ArrayList<String> files = new ArrayList<String>();
-                for (String line: response.split("\n")) {
-                    if(line.contains(".g") || line.contains(".ngc")) {
-                        files.add(line);
+                if(cmd.equals("M20")) {
+                    ArrayList<String> files = new ArrayList<String>();
+                    for (String line : response.split("\n")) {
+                        if (line.contains(".g") || line.contains(".ngc")) {
+                            files.add(line);
+                        }
                     }
-                }
-                Collections.sort(files); 
+                    Collections.sort(files);
 
-                adapter = new ArrayAdapter<String> (GcodeActivity.this, R.layout.list_item, files.toArray(new String[files.size()]));
-                listView = (ListView) findViewById(R.id.gcode_file_list);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String gcode_file = (String)adapter.getItem(i);
-                        sendCommand("M32 " + gcode_file);
-                    }
-                });
+                    adapter = new ArrayAdapter<String>(GcodeActivity.this, R.layout.list_item, files.toArray(new String[files.size()]));
+                    listView = (ListView) findViewById(R.id.gcode_file_list);
+                    listView.setAdapter(adapter);
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            gcode_file = (String) adapter.getItem(i);
+//                            sendCommand("M32 " + gcode_file);
+                            sendCommand("cat /sd/" + gcode_file);
+                        }
+                    });
+                } else if(cmd.startsWith("cat")) {
+                    TextView textView = (TextView) findViewById(R.id.edit_gcode);
+                    textView.setText(response);
+                }
             }
         }, new Response.ErrorListener() {
             @Override

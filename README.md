@@ -11,6 +11,7 @@ I'm building SmoothTouch because I've been using perl long enough to believe tha
  * The switch in preferences toggles between G0 (safe) and G1 (burn) for jogs
 * Simple on/off control for a fan/light (M106S100/M107)
 * Halt/Reset (M112/M999) that works even mid-move
+* Gcode player
 
 # Credits
 
