@@ -31,10 +31,12 @@ import java.util.Collections;
 
 public class GcodeActivity extends AppCompatActivity {
 
-    String gcode_file;
-
     public void playFile(View view) {
-        sendCommand("M32 " + gcode_file);
+        sendCommand("M24");
+    }
+
+    public void deleteFile(View view) {
+        sendCommand("M30 " + gcode_file);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class GcodeActivity extends AppCompatActivity {
     // This code is so not DRY that it isn't even funny
     // http://stackoverflow.com/questions/35168981/how-can-i-share-code-between-multiple-activities-in-android
     SharedPreferences prefs;
-    String url, localCmd;
+    String url, localCmd, gcode_file;
     RequestQueue queue;
     ArrayAdapter adapter;
     ListView listView;
@@ -101,13 +103,13 @@ public class GcodeActivity extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             gcode_file = (String) adapter.getItem(i);
-//                            sendCommand("M32 " + gcode_file);
-                            sendCommand("cat /sd/" + gcode_file);
+                            sendCommand("M23 " + gcode_file);
+                      //      sendCommand("cat /sd/" + gcode_file);
                         }
                     });
                 } else if(cmd.startsWith("cat")) {
-                    TextView textView = (TextView) findViewById(R.id.edit_gcode);
-                    textView.setText(response);
+                    //TextView textView = (TextView) findViewById(R.id.edit_gcode);
+                    //textView.setText(response);
                 }
             }
         }, new Response.ErrorListener() {

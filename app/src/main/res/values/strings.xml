@@ -6,6 +6,11 @@
     <string name="action_gcode">Play G-code</string>
     <string name="title_activity_gcode">Play G-code</string>
 
+    <string name="title_activity_wizard">Wizards</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
@@ -37,5 +42,8 @@
     <string name="pref_default_x_velocity">200</string>
     <string name="pref_default_y_velocity">200</string>
     <string name="pref_default_z_velocity">200</string>
+    <string name="title_activity_wizard_surfacing">Surfacing Wizard</string>
+    <string name="title_activity_depth_map">DepthMapActivity</string>
+
 
 </resources>

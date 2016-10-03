@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <EditText
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -40,6 +40,15 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
             android:onClick="playFile"/>
+        <Button
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:text="Delete"
+            android:textSize="30sp"
+            android:id="@+id/delete"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:onClick="deleteFile"/>
     </LinearLayout>
 
 </LinearLayout>

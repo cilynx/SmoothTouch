@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 if(show_toast) {
                     Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
                 }
-                if(cmd.equals("M114.1")) {
+/*                if(cmd.equals("M114.1")) {
                     parts = response.split(" ");
                     x = Float.valueOf(parts[2].split(":")[1]);
                     y = Float.valueOf(parts[3].split(":")[1]);
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                         dro_z.setText(String.format("%.4f", z));
                     }
                     sendCommand("M114.1", false);
-                }
+                } */
             }
         }, new Response.ErrorListener() {
             @Override
@@ -265,15 +265,20 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
-        }
-
-        if (id == R.id.action_gcode) {
+        } else if (id == R.id.action_gcode) {
             Intent intent = new Intent(this, GcodeActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_wizard) {
+            Intent intent = new Intent(this, WizardActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_depth_map) {
+            Intent intent = new Intent(this, DepthMapActivity.class);
             startActivity(intent);
             return true;
         }

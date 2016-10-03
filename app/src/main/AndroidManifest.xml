@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -41,6 +43,33 @@
         <activity
             android:name=".GcodeActivity"
             android:label="@string/title_activity_gcode"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wolfteck.smoothtouch.MainActivity" />
+        </activity>
+        <activity
+            android:name=".WizardActivity"
+            android:label="@string/title_activity_wizard"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wolfteck.smoothtouch.MainActivity" />
+        </activity>
+        <activity
+            android:name=".WizardSurfacingActivity"
+            android:label="@string/title_activity_wizard_surfacing"
+            android:parentActivityName=".WizardActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wolfteck.smoothtouch.WizardActivity" />
+        </activity>
+        <activity
+            android:name=".DepthMapActivity"
+            android:label="@string/title_activity_depth_map"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
