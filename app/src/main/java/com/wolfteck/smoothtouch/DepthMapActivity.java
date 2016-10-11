@@ -63,6 +63,7 @@ import java.util.Map;
 public class DepthMapActivity extends AppCompatActivity {
 
     private String m_Filename;
+    private StringBuilder m_Gcode;
     private String picturePath;
 
     private static int RESULT_LOAD_IMAGE = 1;
@@ -135,7 +136,8 @@ public class DepthMapActivity extends AppCompatActivity {
                             public byte[] getBody() throws AuthFailureError {
                                 Log.d("uploadRequest","getBody()");
                                 TextView textView = (TextView) findViewById(R.id.imgGcode);
-                                return(textView.getText().toString().getBytes());
+                                return(m_Gcode.toString().getBytes());
+//                                return(textView.getText().toString().getBytes());
                             }
 
                             // Set the X-Filename header
@@ -177,7 +179,8 @@ public class DepthMapActivity extends AppCompatActivity {
                 i.setType("message/rfc822");
                 i.putExtra(Intent.EXTRA_EMAIL, new String[]{"randall.will@gmail.com"});
                 i.putExtra(Intent.EXTRA_SUBJECT, "G-Code from SmoothTouch");
-                i.putExtra(Intent.EXTRA_TEXT, textView.getText());
+  //              i.putExtra(Intent.EXTRA_TEXT, textView.getText());
+                i.putExtra(Intent.EXTRA_TEXT, m_Gcode.toString());
 
                 try {
                     startActivity(Intent.createChooser(i, "Send mail..."));
@@ -219,35 +222,35 @@ public class DepthMapActivity extends AppCompatActivity {
             int height = imgBitmap.getHeight();
             int width = imgBitmap.getWidth();
 
-            StringBuilder gcode = new StringBuilder();
+            m_Gcode = new StringBuilder();
 
-            gcode.append("G90 ; Absolute mode\nG21 ; Metric mode\nM03 ; Laser on\n");
+            m_Gcode.append("G90 ; Absolute mode\nG21 ; Metric mode\nM03 ; Laser on\n");
 
             double scale = 2.0;
 
             for (int y = 0; y < height; y++) {
                 if (y % 2 == 0) {
-                    gcode.append("\nG0 X0 Y").append((height - y - 1)/scale).append("\n\n");
+                    m_Gcode.append("\nG0 X0 Y").append((height - y - 1)/scale).append(" F3000\n\n");
                     for (int x = 0; x < width; x++) {
                         int color = imgBitmap.getPixel(x, y);
                         int brightness = (int) (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color));
-                        gcode.append("G1 X" + ((x + 1)/scale) + " Y" + ((height - y - 1)/scale) + " S" + (1.0 - brightness / 255.0) + "\n");
+                        m_Gcode.append("G1 X" + ((x + 1)/scale) + " Y" + ((height - y - 1)/scale) + " S" + (1.0 - brightness / 255.0) + " F3000\n");
                     }
                 } else {
-                    gcode.append("\nG0 X").append(width / scale).append(" Y" + ((height - y - 1)/scale) + "\n\n");
+                    m_Gcode.append("\nG0 X").append(width / scale).append(" Y" + ((height - y - 1)/scale) + " F3000\n\n");
                     for (int x = width - 1; x >= 0; x--) {
                         int color = imgBitmap.getPixel(x, y);
                         int brightness = (int) (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color));
-                        gcode.append("G1 X" + (x/scale) + " Y" + ((height - y - 1)/scale) + " S" + (1.0 - brightness / 255.0) + "\n");
+                        m_Gcode.append("G1 X" + (x/scale) + " Y" + ((height - y - 1)/scale) + " S" + (1.0 - brightness / 255.0) + " F3000\n");
                     }
                 }
             }
 
-            gcode.append("\nM05 ; Laser off\n");
+            m_Gcode.append("\nM05 ; Laser off\n");
 
             TextView textView = (TextView) findViewById(R.id.imgGcode);
-            textView.setMovementMethod(new ScrollingMovementMethod());
-            textView.setText(gcode);
+            //textView.setMovementMethod(new ScrollingMovementMethod());
+            //textView.setText(gcode);
         }
 
 

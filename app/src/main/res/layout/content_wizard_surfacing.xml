@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:focusableInTouchMode="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -14,278 +14,351 @@
     tools:showIn="@layout/activity_wizard_surfacing">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <Button
-            android:layout_height="wrap_content"
-            android:text="Upper Left"
-            android:textSize="50sp"
             android:id="@+id/set_upper_left"
             android:layout_width="match_parent"
-            android:onClick="setUpperLeft"/>
-
-        <EditText
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:textSize="50sp"
-            android:id="@+id/upper_left" />
-
-        <Button
-            android:layout_height="wrap_content"
-            android:text="Lower Right"
-            android:textSize="50sp"
-            android:id="@+id/set_lower_right"
-            android:layout_width="match_parent"
-            android:onClick="setLowerRight"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:textSize="50sp"
-            android:id="@+id/lower_right" />
-
-        <Button
-            android:layout_height="wrap_content"
-            android:text="Start Depth"
-            android:textSize="50sp"
-            android:id="@+id/set_start_depth"
-            android:layout_width="match_parent"
-            android:onClick="setStartDepth"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:textSize="50sp"
-            android:id="@+id/start_depth" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tool Diameter"
-            android:textSize="60sp"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:id="@+id/set_tool_diameter" />
+            android:onClick="setUpperLeft"
+            android:text="Upper Left"
+            android:textSize="50sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <EditText
+                android:id="@+id/upper_right_x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:textSize="60sp"
-                android:text="1"
                 android:layout_weight="1"
-                android:id="@+id/tool_diameter" />
+                android:inputType="numberDecimal"
+                android:textSize="50sp" />
+
+            <EditText
+                android:id="@+id/upper_right_y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:textSize="50sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/set_lower_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="setLowerRight"
+            android:text="Lower Right"
+            android:textSize="50sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/lower_right_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:textSize="50sp" />
+
+            <EditText
+                android:id="@+id/lower_right_y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:textSize="50sp" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/set_tool_diameter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:text="Tool Diameter"
+            android:textSize="50sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/tool_diameter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:text="1"
+                android:textSize="50sp" />
+
             <ToggleButton
+                android:id="@+id/tool_unit"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textOn="mm"
                 android:textOff="inch"
-                android:textSize="40sp"
-                android:id="@+id/tool_unit"
-                android:layout_width="match_parent" />
+                android:textOn="mm"
+                android:textSize="50sp" />
         </LinearLayout>
 
 
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
+        <Button
+            android:id="@+id/set_start_depth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="setStartDepth"
+            android:text="Start Depth"
+            android:textSize="50sp" />
 
+        <EditText
+            android:id="@+id/start_depth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:textSize="50sp" />
+
+        <Button
+            android:id="@+id/set_end_depth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="setEndDepth"
+            android:text="End Depth"
+            android:textSize="50sp" />
+
+        <EditText
+            android:id="@+id/end_depth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:textSize="50sp" />
+
+        <TextView
+            android:id="@+id/set_pass_depth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:text="Depth Per Pass"
+            android:textSize="50sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/pass_depth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:text="0.5"
+                android:textSize="50sp" />
+
+            <ToggleButton
+                android:id="@+id/pass_unit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textOff="mm"
+                android:textOn="inch"
+                android:textSize="50sp" />
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="0.0000"
             android:id="@+id/dro_x"
-            android:textSize="65sp"
-            android:gravity="right"
-            android:layout_weight="1" />
-
-        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="1"
+            android:gravity="right"
             android:text="0.0000"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="65sp" />
+
+        <TextView
             android:id="@+id/dro_y"
-            android:textSize="65sp"
-            android:gravity="right"
-            android:layout_weight="1" />
-
-        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="0.0000"
-            android:textSize="65dp"
-            android:id="@+id/dro_z"
+            android:layout_weight="1"
             android:gravity="right"
-            android:layout_weight="1" />
+            android:text="0.0000"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="65sp" />
+
+        <TextView
+            android:id="@+id/dro_z"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="0.0000"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="65dp" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <ToggleButton
+                android:id="@+id/relative_toggle"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textOn="Rel"
                 android:textOff="Abs"
-                android:textSize="30sp"
-                android:id="@+id/relative_toggle"
-                android:layout_width="match_parent" />
+                android:textOn="Rel"
+                android:textSize="30sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="Zero"
-                android:textSize="30sp"
                 android:id="@+id/zero"
                 android:layout_width="match_parent"
-                android:onClick="zeroDRO"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="zeroDRO"
+                android:text="Zero"
+                android:textSize="30sp" />
 
             <ToggleButton
+                android:id="@+id/play_pause"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textOn="Reset"
                 android:textOff="Halt"
-                android:textSize="30sp"
-                android:id="@+id/play_pause" />
+                android:textOn="Reset"
+                android:textSize="30sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#x2302;X"
-                android:textSize="80sp"
                 android:id="@+id/home_x"
-                android:onClick="homeX"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="homeX"
+                android:text="&#x2302;X"
+                android:textSize="80sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#8593;"
-                android:layout_gravity="center_vertical"
-                android:textSize="80sp"
                 android:id="@+id/jog_up"
-                android:onClick="jogUp"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:onClick="jogUp"
+                android:text="&#8593;"
+                android:textSize="80sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#x2302;Y"
-                android:textSize="80sp"
                 android:id="@+id/home_y"
-                android:onClick="homeY"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="homeY"
+                android:text="&#x2302;Y"
+                android:textSize="80sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#8592;"
-                android:textSize="80sp"
                 android:id="@+id/jog_left"
-                android:onClick="jogLeft"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="jogLeft"
+                android:text="&#8592;"
+                android:textSize="80sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="1mm"
-                android:textSize="25sp"
                 android:id="@+id/jog_amount"
-                android:onClick="jogAmount"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="jogAmount"
+                android:text="1mm"
+                android:textSize="25sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#8594;"
-                android:textSize="80sp"
                 android:id="@+id/jog_right"
-                android:onClick="jogRight"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="jogRight"
+                android:text="&#8594;"
+                android:textSize="80sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#x2302;"
-                android:textSize="80sp"
                 android:id="@+id/home"
-                android:onClick="home"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="home"
+                android:text="&#x2302;"
+                android:textSize="80sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#8595;"
-                android:textSize="80sp"
                 android:id="@+id/jog_down"
-                android:onClick="jogDown"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="jogDown"
+                android:text="&#8595;"
+                android:textSize="80sp" />
 
             <Button
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:layout_weight="1"
-                android:text="&#x2302;Z"
-                android:textSize="80sp"
                 android:id="@+id/home_z"
-                android:onClick="homeZ"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="homeZ"
+                android:text="&#x2302;Z"
+                android:textSize="80sp" />
 
         </LinearLayout>
 
     </LinearLayout>
-
-
 
 
 </LinearLayout>
