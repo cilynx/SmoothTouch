@@ -32,7 +32,7 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/upper_right_x"
+                android:id="@+id/upper_left_x"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -40,7 +40,7 @@
                 android:textSize="50sp" />
 
             <EditText
-                android:id="@+id/upper_right_y"
+                android:id="@+id/upper_left_y"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -104,11 +104,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textOff="inch"
-                android:textOn="mm"
+                android:textOff="mm"
+                android:textOn="inch"
                 android:textSize="50sp" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/surface_the_part"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="surfaceThePart"
+            android:text="GO!"
+            android:textSize="50sp" />
 
     </LinearLayout>
 
@@ -179,6 +186,15 @@
                 android:textSize="50sp" />
         </LinearLayout>
 
+        <ToggleButton
+            android:id="@+id/play_pause"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textOff="Halt!"
+            android:textOn="Reset"
+            android:textSize="50sp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -187,35 +203,83 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/dro_x"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="right"
-            android:text="0.0000"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="65sp" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/dro_y"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="0.0000"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="65sp" />
+            <Button
+                android:id="@+id/jog_z_up"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:onClick="jogZP"
+                android:text="&#8593;"
+                android:textSize="80sp" />
 
-        <TextView
-            android:id="@+id/dro_z"
+            <TextView
+                android:id="@+id/dro_x"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="0.0000"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="65sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="right"
-            android:text="0.0000"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="65dp" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/home_z"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:onClick="homeZ"
+                android:text="&#x2302;Z"
+                android:textSize="80sp" />
+
+            <TextView
+                android:id="@+id/dro_y"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="0.0000"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="65sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/jog_z_down"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:onClick="jogZN"
+                android:text="&#8595;"
+                android:textSize="80sp" />
+
+            <TextView
+                android:id="@+id/dro_z"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="0.0000"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="65sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -237,18 +301,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="zeroDRO"
+                android:onClick="zeroWorkspaceDRO"
                 android:text="Zero"
                 android:textSize="30sp" />
 
-            <ToggleButton
-                android:id="@+id/play_pause"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textOff="Halt"
-                android:textOn="Reset"
-                android:textSize="30sp" />
 
         </LinearLayout>
 
@@ -273,7 +329,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:onClick="jogUp"
+                android:onClick="jogYP"
                 android:text="&#8593;"
                 android:textSize="80sp" />
 
@@ -299,7 +355,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="jogLeft"
+                android:onClick="jogXN"
                 android:text="&#8592;"
                 android:textSize="80sp" />
 
@@ -317,7 +373,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="jogRight"
+                android:onClick="jogXP"
                 android:text="&#8594;"
                 android:textSize="80sp" />
 
@@ -343,17 +399,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="jogDown"
+                android:onClick="jogYN"
                 android:text="&#8595;"
                 android:textSize="80sp" />
 
             <Button
-                android:id="@+id/home_z"
+                android:id="@+id/blank"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:onClick="homeZ"
-                android:text="&#x2302;Z"
+                android:text=""
                 android:textSize="80sp" />
 
         </LinearLayout>
