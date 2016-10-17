@@ -25,6 +25,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 toolbar.setSubtitle("Cannot connect to " + prefs.getString("smoothie_host","smoothie") + ".  Please check your hostname / IP.");
                 Toast.makeText(MainActivity.this, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
                 if(cmd.equals("M114.1")) {
-                    SystemClock.sleep(5000);
+                    // SystemClock.sleep(5000);
                     sendCommand("M114.1", false);
                 }
             }
@@ -132,6 +133,14 @@ public class MainActivity extends AppCompatActivity {
                 return(localCmd.getBytes());
             }
         };
+
+        // Set timeout
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                60000,  // 60 second timeout
+                0,      // Don't retry.  DefaultRetryPolicy.DEFAULT_MAX_RETRIES == 1
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT // 1f
+        ));
+
         // Add the request to the RequestQueue.
         queue.add(postRequest);
     }

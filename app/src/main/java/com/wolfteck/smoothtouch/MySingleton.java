@@ -1,11 +1,12 @@
 package com.wolfteck.smoothtouch;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -16,9 +17,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 // https://developer.android.com/training/volley/requestqueue.html#singleton
@@ -28,7 +28,8 @@ public class MySingleton {
     private RequestQueue mRequestQueue;
     private static Context mCtx;
     private static SharedPreferences prefs;
-    private static String mURL;
+    private static String mCommandURL;
+    private static String mUploadURL;
     private static StringRequest mRequestDRO;
 
     private static double mMachineX = 0;
@@ -43,9 +44,10 @@ public class MySingleton {
     private static boolean mWorkspaceDRO = false;
 
     private MySingleton(Context context) {
-        mCtx = context;
-        prefs = PreferenceManager.getDefaultSharedPreferences(mCtx.getApplicationContext());
-        mURL = "http://" + prefs.getString("smoothie_host", "smoothie") + "/command";
+        mCtx = context.getApplicationContext();
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mCommandURL = "http://" + prefs.getString("smoothie_host", "smoothie") + "/command";
+        mUploadURL = "http://" + prefs.getString("smoothie_host", "smoothie") + "/upload";
 
         mRequestQueue = getRequestQueue();
     }
@@ -59,7 +61,7 @@ public class MySingleton {
 
     public RequestQueue getRequestQueue() {
         if(mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+            mRequestQueue = Volley.newRequestQueue(mCtx);
         }
         return mRequestQueue;
     }
@@ -69,7 +71,7 @@ public class MySingleton {
     }
 
     public void watchDRO(final TextView[] droViews) {
-        mRequestDRO = new StringRequest(Request.Method.POST, mURL, new Response.Listener<String>() {
+        mRequestDRO = new StringRequest(Request.Method.POST, mCommandURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 String[] parts = response.split(" ");
@@ -166,7 +168,59 @@ public class MySingleton {
 
     public void lineByLine(String gcode) {
         StringTokenizer st = new StringTokenizer(gcode, "\n");
+        stopDRO();
         sendCommand(st.nextToken(), st);
+    }
+
+    public void playFile(final String filename) {
+        sendCommand("M32 " + filename);
+    }
+
+    public void deleteFile(final String filename) {
+        sendCommand("M400 M30 " + filename);
+    }
+
+    public void sendFile(final String gcode, final String filename) {
+
+//        final ProgressDialog loading = ProgressDialog.show(mCtx.getApplicationContext(), "Uploading...","Please wait...",false,false);
+
+        Toast.makeText(mCtx, "Sending " + filename, Toast.LENGTH_SHORT).show();
+
+        StringRequest uploadRequest = new StringRequest(Request.Method.POST, mUploadURL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+//                loading.setProgress(100);
+//                loading.dismiss();
+                Toast.makeText(mCtx, response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                loading.dismiss();
+                Toast.makeText(mCtx, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        ) {
+            // Put the Gcode in the POST body
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                return(gcode.getBytes());
+            }
+
+            // Set the X-Filename header
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Log.d("uploadRequest","getHeaders()");
+                // String fileName = Long.toString(System.currentTimeMillis()) + ".g";
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("X-Filename", filename);
+                return params;
+            }
+        };
+
+        uploadRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        addToRequestQueue(uploadRequest);
     }
 
     private void sendCommand(final String command) {
@@ -174,13 +228,16 @@ public class MySingleton {
     }
 
     private void sendCommand(final String command, final StringTokenizer st) {
-        StringRequest request = new StringRequest(Request.Method.POST, mURL, new Response.Listener<String>() {
+        Toast.makeText(mCtx, command, Toast.LENGTH_SHORT).show();
+        StringRequest request = new StringRequest(Request.Method.POST, mCommandURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("onResponse",response);
                 if(st != null) {
                     if(st.hasMoreTokens()) {
                         sendCommand(st.nextToken() + " M400", st);
+                    } else {
+                        startDRO();
                     }
                 }
             }
@@ -188,7 +245,7 @@ public class MySingleton {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Should we retry forever or...?  Maybe a user preference?
-                Log.e("onErrorResponse", error.toString());
+                Toast.makeText(mCtx, error.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
             }
         })
         {
@@ -199,8 +256,12 @@ public class MySingleton {
             }
         };
 
-        request.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                60000,  // 60 second timeout
+                0,      // Don't retry.  DefaultRetryPolicy.DEFAULT_MAX_RETRIES == 1
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT // 1f
+        ));
+
         addToRequestQueue(request);
     }
 

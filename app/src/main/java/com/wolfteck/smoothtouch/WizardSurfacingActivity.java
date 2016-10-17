@@ -165,8 +165,12 @@ public class WizardSurfacingActivity extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            Toast.makeText(WizardSurfacingActivity.this, "W00t", Toast.LENGTH_LONG).show();
-                            mSmoothie.lineByLine(gcode.toString());
+                            Toast.makeText(WizardSurfacingActivity.this, Long.toString(System.currentTimeMillis()), Toast.LENGTH_LONG).show();
+                            String filename = Long.toString(System.currentTimeMillis()) + ".g";
+                            mSmoothie.sendFile(gcode.toString(), filename);
+                            mSmoothie.playFile(filename);
+//                            mSmoothie.deleteFile(filename);
+                            //mSmoothie.lineByLine(gcode.toString());
                         }})
                     .setNegativeButton(android.R.string.no, null).show();
         } else {
