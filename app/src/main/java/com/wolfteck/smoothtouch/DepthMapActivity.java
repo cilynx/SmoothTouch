@@ -62,9 +62,10 @@ import java.util.Map;
 
 public class DepthMapActivity extends AppCompatActivity {
 
-    private String m_Filename;
     private StringBuilder m_Gcode;
     private String picturePath;
+    private MySingleton mSmoothie;
+
 
     private static int RESULT_LOAD_IMAGE = 1;
     /**
@@ -83,6 +84,8 @@ public class DepthMapActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this);
 
+        mSmoothie = MySingleton.getInstance(getApplicationContext());
+
         Button buttonLoadImage = (Button) findViewById(R.id.buttonLoadPicture);
         buttonLoadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +101,9 @@ public class DepthMapActivity extends AppCompatActivity {
         buttonRunGcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DepthMapActivity.this);
+                mSmoothie.playGcode(m_Gcode.toString(), DepthMapActivity.this);
+
+               /* AlertDialog.Builder builder = new AlertDialog.Builder(DepthMapActivity.this);
                 builder.setTitle("G Code Name");
                 final EditText input = new EditText(DepthMapActivity.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -155,7 +160,6 @@ public class DepthMapActivity extends AppCompatActivity {
 
                         Log.d("uploadRequest","Adding uploadRequest to queue");
                         queue.add(uploadRequest);
-
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -164,12 +168,12 @@ public class DepthMapActivity extends AppCompatActivity {
                         dialogInterface.cancel();
                     }
                 });
-                builder.show();
+                builder.show(); */
             }
         });
 
         // TODO: Refactor this to email attachments
-        Button buttonEmailGcode = (Button) findViewById(R.id.buttonEmailGcode);
+        /* Button buttonEmailGcode = (Button) findViewById(R.id.buttonEmailGcode);
         buttonEmailGcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -190,7 +194,7 @@ public class DepthMapActivity extends AppCompatActivity {
 
 
             }
-        });
+        }); */
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -206,8 +210,7 @@ public class DepthMapActivity extends AppCompatActivity {
 
             Toast.makeText(DepthMapActivity.this, selectedImage.toString(), Toast.LENGTH_SHORT).show();
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
             cursor.moveToFirst();
 
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
@@ -224,7 +227,7 @@ public class DepthMapActivity extends AppCompatActivity {
 
             m_Gcode = new StringBuilder();
 
-            m_Gcode.append("G90 ; Absolute mode\nG21 ; Metric mode\nM03 ; Laser on\n");
+            m_Gcode.append("G90 ; Absolute mode\nG21 ; Metric mode\nM03 ; Laser on\nM17 ; Steppers on\n");
 
             double scale = 2.0;
 
@@ -246,9 +249,9 @@ public class DepthMapActivity extends AppCompatActivity {
                 }
             }
 
-            m_Gcode.append("\nM05 ; Laser off\n");
+            m_Gcode.append("\nM05 ; Laser off\nG0 X0 Y0 ; Go home\nM18 ; Steppers off");
 
-            TextView textView = (TextView) findViewById(R.id.imgGcode);
+            //TextView textView = (TextView) findViewById(R.id.imgGcode);
             //textView.setMovementMethod(new ScrollingMovementMethod());
             //textView.setText(gcode);
         }

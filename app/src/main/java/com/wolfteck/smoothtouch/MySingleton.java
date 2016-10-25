@@ -19,7 +19,8 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // https://developer.android.com/training/volley/requestqueue.html#singleton
 
@@ -28,9 +29,11 @@ public class MySingleton {
     private RequestQueue mRequestQueue;
     private static Context mCtx;
     private static SharedPreferences prefs;
+    private static String mSendPlayDelete;
     private static String mCommandURL;
     private static String mUploadURL;
     private static StringRequest mRequestDRO;
+    private static StringRequest mRequest;
 
     private static double mMachineX = 0;
     private static double mMachineY = 0;
@@ -42,6 +45,9 @@ public class MySingleton {
 
     private static boolean mRunDRO = false;
     private static boolean mWorkspaceDRO = false;
+    private static boolean mIsPlaying = false;
+
+    private static ProgressDialog mProgressDialog;
 
     private MySingleton(Context context) {
         mCtx = context.getApplicationContext();
@@ -166,52 +172,70 @@ public class MySingleton {
         sendCommand("M999");
     }
 
-    public void lineByLine(String gcode) {
-        StringTokenizer st = new StringTokenizer(gcode, "\n");
-        stopDRO();
-        sendCommand(st.nextToken(), st);
+    public void selectFile(final String filename) {
+        sendCommand("M23 " + filename);
     }
 
-    public void playFile(final String filename) {
+    public void playGcode(final String gcode, Context activityContext) {
+        mSendPlayDelete = Long.toString(System.currentTimeMillis()) + ".g";
+        sendFile(gcode, mSendPlayDelete, activityContext);
+    }
+
+    public void playFile(final String filename, Context activityContext) {
+        Toast.makeText(mCtx, "Playing " + filename, Toast.LENGTH_SHORT).show();
+        mIsPlaying = true;
+
+        mProgressDialog = new ProgressDialog(activityContext);
+        mProgressDialog.setMessage("Transferring File...");
+        mProgressDialog.setTitle("Playing G-Code");
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.show();
+
         sendCommand("M32 " + filename);
     }
 
     public void deleteFile(final String filename) {
-        sendCommand("M400 M30 " + filename);
+        Toast.makeText(mCtx, "Deleting " + filename, Toast.LENGTH_SHORT).show();
+        mSendPlayDelete = "";
+        sendCommand("M30 " + filename);
     }
 
-    public void sendFile(final String gcode, final String filename) {
+    public void sendFile(final String gcode, final String filename, final Context activityContext) {
 
-//        final ProgressDialog loading = ProgressDialog.show(mCtx.getApplicationContext(), "Uploading...","Please wait...",false,false);
+        mProgressDialog = new ProgressDialog(activityContext);
+        mProgressDialog.setMessage("Transferring File...");
+        mProgressDialog.setTitle("Playing G-Code");
+        mProgressDialog.show();
 
         Toast.makeText(mCtx, "Sending " + filename, Toast.LENGTH_SHORT).show();
 
         StringRequest uploadRequest = new StringRequest(Request.Method.POST, mUploadURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-//                loading.setProgress(100);
-//                loading.dismiss();
                 Toast.makeText(mCtx, response, Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
+                if(mSendPlayDelete.equals(filename)) { playFile(mSendPlayDelete, activityContext); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                loading.dismiss();
                 Toast.makeText(mCtx, error.getClass().getSimpleName(), Toast.LENGTH_SHORT).show();
+                mProgressDialog.dismiss();
             }
         }
         ) {
             // Put the Gcode in the POST body
             @Override
             public byte[] getBody() throws AuthFailureError {
-                return(gcode.getBytes());
+                String fullCode = "M17 ; Enable Steppers\nG91 ; Relative Mode\nG X0 Y0 Z0 F" + prefs.getString("x_velocity", "200") + " ; Set Default Speed\nG90 ; Absolute mode" + gcode + "\nM18 ; Disable Steppers";
+                return(fullCode.getBytes());
             }
 
             // Set the X-Filename header
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Log.d("uploadRequest","getHeaders()");
-                // String fileName = Long.toString(System.currentTimeMillis()) + ".g";
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("X-Filename", filename);
                 return params;
@@ -224,21 +248,38 @@ public class MySingleton {
     }
 
     private void sendCommand(final String command) {
-        sendCommand(command, null);
-    }
+        if(!command.equals("M27")) {
+            Toast.makeText(mCtx, command, Toast.LENGTH_SHORT).show();
+        }
 
-    private void sendCommand(final String command, final StringTokenizer st) {
-        Toast.makeText(mCtx, command, Toast.LENGTH_SHORT).show();
-        StringRequest request = new StringRequest(Request.Method.POST, mCommandURL, new Response.Listener<String>() {
+        mRequest = new StringRequest(Request.Method.POST, mCommandURL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("onResponse",response);
-                if(st != null) {
-                    if(st.hasMoreTokens()) {
-                        sendCommand(st.nextToken() + " M400", st);
-                    } else {
-                        startDRO();
+
+                if(response.contains("Not currently playing")) {
+                    mIsPlaying = false;
+                    mProgressDialog.dismiss();
+                }
+
+                if(mIsPlaying) {
+                    mProgressDialog.setMessage("Printing...");
+//                    Toast.makeText(mCtx, response, Toast.LENGTH_SHORT).show();
+                    if(response.contains("printing byte")) {
+                        Pattern p = Pattern.compile("(\\d+)/(\\d+)");
+                        Matcher m = p.matcher(response);
+                        if(m.find()) {
+
+                            mProgressDialog.setMax(Integer.parseInt(m.group(2)));
+                            mProgressDialog.setProgress(Integer.parseInt(m.group(1)));
+
+//                            Toast.makeText(mCtx, m.group(1) + " " + m.group(2), Toast.LENGTH_SHORT).show();
+                        }
                     }
+                    sendCommand("M27");
+                } else if(mSendPlayDelete != null && !mSendPlayDelete.isEmpty()) {
+                    deleteFile(mSendPlayDelete);
+                } else {
+                    Toast.makeText(mCtx, response, Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -246,6 +287,7 @@ public class MySingleton {
             public void onErrorResponse(VolleyError error) {
                 // Should we retry forever or...?  Maybe a user preference?
                 Toast.makeText(mCtx, error.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
+                if(command.equals("M27")) { sendCommand("M27"); }
             }
         })
         {
@@ -256,13 +298,13 @@ public class MySingleton {
             }
         };
 
-        request.setRetryPolicy(new DefaultRetryPolicy(
+        mRequest.setRetryPolicy(new DefaultRetryPolicy(
                 60000,  // 60 second timeout
                 0,      // Don't retry.  DefaultRetryPolicy.DEFAULT_MAX_RETRIES == 1
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT // 1f
         ));
 
-        addToRequestQueue(request);
+        addToRequestQueue(mRequest);
     }
 
 }

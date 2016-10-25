@@ -31,12 +31,23 @@ import java.util.Collections;
 
 public class GcodeActivity extends AppCompatActivity {
 
-    public void playFile(View view) {
-        sendCommand("M24");
+    private MySingleton mSmoothie;
+    private static String mFilename;
+
+    public void playFile(View button) {
+        if(mFilename == null) {
+            Toast.makeText(GcodeActivity.this, "Select a file to play!", Toast.LENGTH_SHORT).show();
+        } else {
+            mSmoothie.playFile(mFilename, GcodeActivity.this);
+        }
     }
 
-    public void deleteFile(View view) {
-        sendCommand("M30 " + gcode_file);
+    public void deleteFile(View button) {
+        if(mFilename == null) {
+            Toast.makeText(GcodeActivity.this, "Select a file to delete!", Toast.LENGTH_SHORT).show();
+        } else {
+            mSmoothie.deleteFile(mFilename);
+        }
     }
 
     @Override
@@ -45,6 +56,8 @@ public class GcodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gcode);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSmoothie = MySingleton.getInstance(getApplicationContext());
 
         queue = Volley.newRequestQueue(this);
         sendCommand("M20");
@@ -102,8 +115,8 @@ public class GcodeActivity extends AppCompatActivity {
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            gcode_file = (String) adapter.getItem(i);
-                            sendCommand("M23 " + gcode_file);
+                            mFilename = (String) adapter.getItem(i);
+                            mSmoothie.selectFile(mFilename);
                       //      sendCommand("cat /sd/" + gcode_file);
                         }
                     });

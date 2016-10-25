@@ -166,9 +166,10 @@ public class WizardSurfacingActivity extends AppCompatActivity {
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             Toast.makeText(WizardSurfacingActivity.this, Long.toString(System.currentTimeMillis()), Toast.LENGTH_LONG).show();
-                            String filename = Long.toString(System.currentTimeMillis()) + ".g";
-                            mSmoothie.sendFile(gcode.toString(), filename);
-                            mSmoothie.playFile(filename);
+                            mSmoothie.playGcode(gcode.toString(), WizardSurfacingActivity.this);
+                            //String filename = Long.toString(System.currentTimeMillis()) + ".g";
+                            //mSmoothie.sendFile(gcode.toString(), filename);
+                            //mSmoothie.playFile(filename);
 //                            mSmoothie.deleteFile(filename);
                             //mSmoothie.lineByLine(gcode.toString());
                         }})
